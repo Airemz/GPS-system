@@ -9,13 +9,11 @@
 
 
 // For testing:
-//./graph.out < inputs/250Ktest001.in > my_outputs/250k.out
+//./graph.out < inputs/test06.in > my_outputs/mtest06.out
 // ./graph.out < inputs/test02.in > my_outputs/mtest02.out
 // Add -g to cxxflags in make file
 //valgrind --leak-check=full --show-leak-kinds=all ./tokenize.out <inputs/test03.in 
 //valgrind --leak-check=full --show-leak-kinds=all ./graph.out
-
-// Fix time complex of all the path and lowest, others are good i think, should also check time complexity of driver.cpp
 
 int main(){
 

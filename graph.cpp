@@ -22,9 +22,13 @@ Graph::~Graph(){
 void Graph::insert(unsigned int& a, unsigned int& b, double& d, double& s, double& A){
 
     // Check if vertex b is a neighbour of vertex a, if so update d and s values, but leave A
-    if ((*graph)[a].find(b) != (*graph)[a].end()){
-        std::get<0> ((*graph)[a][b]) = std::get<0> ((*graph)[b][a]) = d;
-        std::get<1> ((*graph)[a][b]) = std::get<1> ((*graph)[b][a]) = s;
+    if ((*graph).find(a) != (*graph).end() && (*graph).find(b) != (*graph).end()){
+        if ((*graph)[a].find(b) != (*graph)[a].end()){
+            std::get<0> ((*graph)[a][b]) = std::get<0> ((*graph)[b][a]) = d;
+            std::get<1> ((*graph)[a][b]) = std::get<1> ((*graph)[b][a]) = s;
+        }
+
+        else{ (*graph)[a][b] = (*graph)[b][a] = std::make_tuple(d,s,A);}
     }
 
     // If the edge doesn't exist, create it
@@ -34,13 +38,17 @@ void Graph::insert(unsigned int& a, unsigned int& b, double& d, double& s, doubl
 bool Graph::traffic(unsigned int& a, unsigned int& b, double& A){
 
     // Chcek if vertex b is a neighbour of vertex a, if so update the A value and return true
-    if ((*graph)[a].find(b) != (*graph)[a].end()){
-        std::get<2>((*graph)[a][b]) = std::get<2> ((*graph)[b][a]) = A;
-        return true;
+    if ((*graph).find(a) != (*graph).end() && (*graph).find(b) != (*graph).end()){
+        if ((*graph)[a].find(b) != (*graph)[a].end()){
+            std::get<2>((*graph)[a][b]) = std::get<2> ((*graph)[b][a]) = A;
+            return true;
+        }
+
+        else {return false;}
     }
     
     // Return false since the verticies are not neighbours
-    return false;
+    else {return false;}
 }
 
 bool Graph::print(unsigned int& a){
@@ -48,15 +56,21 @@ bool Graph::print(unsigned int& a){
     bool flag;
 
     // Check if vertex a is in our graph and update our flag / return false
-    if ((*graph).find(a) != (*graph).end()){flag = true;}
-    else {return false;}
+    if ((*graph).find(a) != (*graph).end()){
 
-    // Itterate through all of vertex a's neighbours and output them with spaces in between
-    for (auto& vertex : (*graph)[a]){
+        flag = true;
+
+        // Itterate through all of vertex a's neighbours and output them with spaces in between
+        for (auto& vertex : (*graph)[a]){
         std::cout << std::to_string(vertex.first) + " ";
+        }
+
+        return flag;
     }
 
-    return flag;
+    else {return false;}
+
+    
 }
 
 bool Graph::remove(unsigned int& a){
@@ -82,6 +96,9 @@ std::string Graph::path(unsigned int& a, unsigned int&b){
 
     std::string empty;
     std::string &output = empty;
+
+    // Check if either of the nodes do not exist, return empty string
+    if ((*graph).find(a) == (*graph).end() || (*graph).find(b) == (*graph).end()) {return output;}
 
     // Create a min heap sorted by the distance(T value) and their corresponding vertex
     std::priority_queue <std::pair <double, unsigned int>, std::vector <std::pair <double, unsigned int>>,std::greater <std::pair <double, unsigned int>>> Priority_Queue;
@@ -160,8 +177,12 @@ std::string Graph::path(unsigned int& a, unsigned int&b){
 
 double Graph::lowest(unsigned int& a, unsigned int&b){
 
+
     double output = 0.0;
 
+    // Check if either of the nodes do not exist, return 0
+    if ((*graph).find(a) == (*graph).end() || (*graph).find(b) == (*graph).end()) {return output;}
+    
     // Create a min heap sorted by the distance(T value) and their corresponding vertex
     std::priority_queue <std::pair <double, unsigned int>, std::vector <std::pair <double, unsigned int>>,std::greater <std::pair <double, unsigned int>>> Priority_Queue;
     
@@ -189,10 +210,15 @@ double Graph::lowest(unsigned int& a, unsigned int&b){
         double current_distance = popped.first;
         unsigned int current_vertex = popped.second;
 
+         // if a vertex is already completed, continue to the next element in the PQ
+        if (completed.find(current_vertex) != completed.end()) {
+            continue; 
+        } 
+
         // Insert the vertex into the completed set so that we don't overwrite the best distance
         completed.insert(current_vertex);
 
-        // Check if we reached our destinate node
+        // Check if we reached our destination node
         if (current_vertex == b) {
             output = best_distance[b];
             return output;
