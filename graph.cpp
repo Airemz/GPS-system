@@ -127,6 +127,11 @@ std::string Graph::path(unsigned int& a, unsigned int&b){
         double current_distance = popped.first;
         unsigned int current_vertex = popped.second;
 
+        // if a vertex is already completed, continue to the next element in the PQ
+        if (completed.find(current_vertex) != completed.end()) {
+            continue; 
+        } 
+
         // Insert the vertex into the completed set so that we don't overwrite the best distance
         completed.insert(current_vertex);
 
